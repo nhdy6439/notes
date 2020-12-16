@@ -1,1 +1,1 @@
-[npm](../daily/2020/12/16.md)
+[npm,shell删除.DS_Store](../daily/2020/12/16.md)
