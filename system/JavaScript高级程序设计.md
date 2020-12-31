@@ -109,3 +109,94 @@ console.log(colors3);  // ["red", "green", "blue", "pink", "cyan"]
 - delete
 - 属性 size
 - WeakSet
+
+# 模块
+
+## CommonJS 同步加载
+### 加载模块：`require('./a')`表示加载模块a.js或者是a文件夹下的index.js
+1.第一次加载会被缓存
+### 导出：`modele.exports={}`
+
+# 网络请求与远程资源
+
+## xhr
+### XMLHttpRequest
+```js
+// 0：未初始化（Uninitialized）。尚未调用open()方法。
+// 1：已打开（Open）。已调用open()方法，尚未调用send()方法。
+// 2：已发送（Sent）。已调用send()方法，尚未收到响应。
+// 3：接收中（Receiving）。已经收到部分响应。
+// 4：完成（Complete）。已经收到所有响应，可以使用了。
+let xhr = new XMLHttpRequest();
+// 为保证跨浏览器兼容，onreadystatechange事件处理程序应该在调用open()之前赋值
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4) {
+    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+      alert(xhr.responseText);
+    } else {
+      alert("Request was unsuccessful: " + xhr.status);
+    }
+  }
+};
+// 三个参数：1.get/post... 2.地址 3.是否异步
+xhr.open("get", "example.txt", true);
+// 请求体或者null
+xhr.send(null);
+// 收到响应之前取消异步请求
+xhr.abort();
+```
+### Resquest Headers
+- Accept：浏览器可以处理的内容类型。
+- Accept-Charset：浏览器可以显示的字符集。
+- Accept-Encoding：浏览器可以处理的压缩编码类型。
+- Accept-Language：浏览器使用的语言。
+- Cache-Control: no-cache
+- Connection：浏览器与服务器的连接类型。
+- Content-Length: 0
+- Content-Type: application/x-www-form-urlencoded
+- Cookie：页面中设置的Cookie。
+- Host：发送请求的页面所在的域。
+- Origin: http://10.170.181.181
+- Pragma: no-cache
+- Referer：发送请求的页面的URI。注意，这个字段在HTTP规范中就拼错了，所以考虑到兼容性也必须将错就错。（正确的拼写应该是Referrer。）
+- User-Agent：浏览器的用户代理字符串。
+- 自定义`xhr.setRequestHeader("MyHeader", "MyValue");`在open()之后send()之前调用
+### Response Headers
+```js
+let myHeader = xhr.getResponseHeader("MyHeader");
+let allHeaders  xhr.getAllResponseHeaders();
+```
+### get
+```js
+// 查询字符串中的每个名和值都必须使用encodeURIComponent()编码，所有名/值对必须以和号（&）分隔
+function addURLParam(url, name, value) {
+  url += (url.indexOf("?") == -1 ? "?" : "&");
+  url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+  return url;
+}
+let url = "example.php";
+// 添加参数
+url = addURLParam(url, "name", "Nicholas");
+url = addURLParam(url, "book", "Professional JavaScript");
+// 初始化请求
+xhr.open("get", url, false);
+```
+### FormData
+```js
+let data = new FormData();
+// let data = new FormData(document.forms[0]);可以直接传入表单
+data.append("name", "Nicholas");
+```
+### timeout & ontimeout
+### overrideMimeType
+```js
+// 强制让XHR把响应当成XML处理
+xhr.overrideMimeType("text/xml");
+```
+### 进度事件
+- loadstart：在接收到响应的第一个字节时触发。
+- progress：在接收响应期间反复触发。lengthComputable进度信息是否可用、position和totalSize可以显示进度条
+- error：在请求出错时触发。
+- abort：在调用abort()终止连接时触发。
+- load：在成功接收完响应时触发。
+- loadend：在通信完成时，且在error、abort或load之后触发。
